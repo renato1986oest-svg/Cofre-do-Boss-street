@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { db } from '@/lib/db';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
 
   if (!beatId) return NextResponse.json({ error: 'Missing beatId' }, { status: 400 });
 
-  const note = db.prepare('SELECT * FROM compositions WHERE beat_id = ?').get(beatId) as any;
+  const note = await db.notes.get(parseInt(beatId));
   return NextResponse.json(note || { content: '' });
 }
 
@@ -17,15 +17,7 @@ export async function POST(request: Request) {
 
     if (!beatId) return NextResponse.json({ error: 'Missing beatId' }, { status: 400 });
 
-    const existing = db.prepare('SELECT id FROM compositions WHERE beat_id = ?').get(beatId);
-
-    if (existing) {
-      db.prepare('UPDATE compositions SET content = ?, updated_at = CURRENT_TIMESTAMP WHERE beat_id = ?')
-        .run(content, beatId);
-    } else {
-      db.prepare('INSERT INTO compositions (beat_id, content) VALUES (?, ?)')
-        .run(beatId, content);
-    }
+    await db.notes.upsert(parseInt(beatId), content);
 
     return NextResponse.json({ success: true });
   } catch (error) {

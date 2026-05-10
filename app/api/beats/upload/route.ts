@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { db } from '@/lib/db';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 
@@ -42,12 +42,15 @@ export async function POST(request: Request) {
     const audioUrl = `/uploads/audio/${audioName}`;
     const coverUrl = `/uploads/covers/${coverName}`;
 
-    const info = db.prepare(`
-      INSERT INTO beats (name, genre, bpm, audio_url, cover_url)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(name, genre, bpm, audioUrl, coverUrl);
+    const newBeat = await db.beats.create({
+      name,
+      genre,
+      bpm,
+      audio_url: audioUrl,
+      cover_url: coverUrl
+    });
 
-    return NextResponse.json({ success: true, id: info.lastInsertRowid });
+    return NextResponse.json({ success: true, id: newBeat.id });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Failed to upload beat' }, { status: 500 });
