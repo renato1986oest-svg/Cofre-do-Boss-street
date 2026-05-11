@@ -7,7 +7,6 @@ import { Disc, Lock, ShieldCheck, Music } from 'lucide-react'
 export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 relative overflow-hidden">
-      <div className="absolute top-4 left-4 text-xs opacity-50 z-50">BOSS COFRE V1.0</div>
       {/* Background decoration */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-600/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/10 blur-[120px] rounded-full" />
